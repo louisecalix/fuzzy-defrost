@@ -25,3 +25,18 @@ This guide provides an overview of frost buildup levels, temperature ranges insi
 - **1 Cold:** Below 20°C or 68°F
 - **2 Moderate:** Between 20°C and 30°C or between 68°F and 86°F
 - **3 Warm:** Above 30°C or 86°F
+
+
+### Rules Table
+
+| Frost Buildup | Temp Inside | Door Opening Freq. | Temp Outside | Defrost Cycle (Output) |
+|---------------|-------------|--------------------|--------------|------------------------|
+| 1 Thin        | Very Cold   | Rarely             | Cold         | No Defrost             |
+| 2 Thin        | Very Cold   | Occasionally       | Moderate     | No Defrost             |
+| 3 Medium      | Cold        | Occasionally       | Moderate     | Short Defrost Cycle    |
+| 4 Medium      | Cold        | Frequently         | Warm         | Long Defrost Cycle     |
+| 5 Thick       | Cold        | Occasionally       | Warm         | Long Defrost Cycle     |
+| 6 Thick       | Moderate    | Frequently         | Warm         | Long Defrost Cycle     |
+| 7 Thick       | Moderate    | Frequently         | Moderate     | Long Defrost Cycle     |
+| 8 Very Thick  | Cold        | Rarely             | Cold         | Short Defrost Cycle    |
+
