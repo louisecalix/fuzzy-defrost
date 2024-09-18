@@ -27,7 +27,7 @@ This guide provides an overview of frost buildup levels, temperature ranges insi
 - **3 Warm:** Above 30°C or 86°F
 
 
-### Rules Table
+## Rules Table
 
 | Frost Buildup | Temp Inside | Door Opening Freq. | Temp Outside | Defrost Cycle (Output) |
 |---------------|-------------|--------------------|--------------|------------------------|
