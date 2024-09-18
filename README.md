@@ -1,4 +1,4 @@
-# Temperature and Frost Buildup Guide
+# Fuzzy Logic Defrosting
 
 This guide provides an overview of frost buildup levels, temperature ranges inside and outside, and door opening frequencies. It is designed to help you assess and manage refrigerator defrosting needs.
 
