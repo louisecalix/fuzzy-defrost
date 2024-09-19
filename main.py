@@ -1,84 +1,78 @@
-def get_frostBuildUp(mm):
-    if mm < 2:
-        return "Thin"
-    elif 2 <= mm <= 5:
-        return "Medium"
+def get_frostBuildUp(x):
+    if x < 2:
+        return (1, 0, 0)  # Thin, Medium, Thick
+    elif 2 <= x <= 5:
+        return (0, (5 - x) / 3, (x - 2) / 3)  # Thin, Medium, Thick
     else:
-        return "Thick"
+        return (0, 0, 1)  # Thin, Medium, Thick
 
-def fet_tempInside(temp):
-    if temp < -10:
-        return "Very Cold"
-    elif -10 <= temp <= 0:
-        return "Cold"
+def get_tempInside(x):
+    if x < -18:
+        return (1, 0, 0)  # Very Cold, Cold, Moderate
+    elif -18 <= x <= -10:
+        return (0, (-10 - x) / 8, (x + 18) / 8)  # Very Cold, Cold, Moderate
+    elif -10 <= x <= -1:
+        return (0, 1, 0)  # Very Cold, Cold, Moderate
     else:
-        return "Moderate"
+        return (0, 0, 1)  # Very Cold, Cold, Moderate
 
-def get_doorOpeningFreq(freq):
-    if freq < 5:
-        return "Rarely"
-    elif 5 <= freq <= 8:
-        return "Occasionally"
+def get_doorOpeningFreq(x):
+    if x < 5:
+        return (1, 0, 0)  # Rarely, Occasionally, Frequently
+    elif 5 <= x <= 7:
+        return (0, (7 - x) / 2, (x - 5) / 2)  # Rarely, Occasionally, Frequently
     else:
-        return "Frequently"
+        return (0, 0, 1)  # Rarely, Occasionally, Frequently
 
-def get_tempOutside(temp):
-    if temp < 20:
-        return "Cold"
-    elif 20 <= temp <= 30:
-        return "Moderate"
+def get_tempOutside(x):
+    if x < 20:
+        return (1, 0, 0)  # Cold, Moderate, Warm
+    elif 20 <= x <= 30:
+        return (0, (30 - x) / 10, (x - 20) / 10)  # Cold, Moderate, Warm
     else:
-        return "Warm"
+        return (0, 0, 1)  # Cold, Moderate, Warm
 
 
-def fuzzy_rules(frost_buildup, temp_inside, door_opening_freq, temp_outside):
 
-    if frost_buildup == "Thin" and temp_inside == "Very Cold" and door_opening_freq == "Rarely" and temp_outside == "Cold":
-        return "No Defrost"
-    
-    elif frost_buildup == "Thin" and temp_inside == "Very Cold" and door_opening_freq == "Occasionally" and temp_outside == "Moderate":
-        return "No Defrost"
-    
-    elif frost_buildup == "Medium" and temp_inside == "Cold" and door_opening_freq == "Occasionally" and temp_outside == "Moderate":
-        return "Short Defrost Cycle"
-    
-    elif frost_buildup == "Medium" and temp_inside == "Cold" and door_opening_freq == "Frequently" and temp_outside == "Moderate":
-        return "Long Defrost Cycle"
-    
-    elif frost_buildup == "Thick" and temp_inside == "Cold" and door_opening_freq == "Occasionally" and temp_outside == "Warm":
-        return "Long Defrost Cycle"
-    
-    elif frost_buildup == "Thick" and temp_inside == "Moderate" and door_opening_freq == "Frequently" and temp_outside == "Warm":
-        return "Long Defrost Cycle"
-    
-    elif frost_buildup == "Thick" and temp_inside == "Moderate" and door_opening_freq == "Frequently" and temp_outside == "Moderate":
-        return "Long Defrost Cycle"
-    
-    elif frost_buildup == "Medium" and temp_inside == "Cold" and door_opening_freq == "Rarely" and temp_outside == "Cold":
-        return "Short Defrost Cycle"
-    
-    elif frost_buildup == "Thin" and temp_inside == "Cold" and door_opening_freq == "Frequently" and temp_outside == "Moderate":
-        return "Short Defrost Cycle"
-    
-    elif frost_buildup == "Thick" and temp_inside == "Very Cold" and door_opening_freq == "Rarely" and temp_outside == "Warm":
-        return "Long Defrost Cycle"
-    
+def defrost_cycle(frost_buildup, temp_inside, door_open_freq, temp_outside):
+    frost_thin, frost_medium, frost_thick = get_frostBuildUp(frost_buildup)
+    temp_very_cold, temp_cold, temp_moderate = get_tempInside(temp_inside)
+    door_rare, door_occasional, door_frequent = get_doorOpeningFreq(door_open_freq)
+    outside_cold, outside_moderate, outside_warm = get_tempOutside(temp_outside)
+
+    short_cycle = max(
+        min(frost_thin, temp_moderate, door_rare, outside_cold),
+        min(frost_thin, temp_cold, door_occasional, outside_cold),
+        min(frost_thin, temp_moderate, door_frequent, outside_moderate)
+    )
+    medium_cycle = max(
+        min(frost_medium, temp_cold, door_occasional, outside_moderate),
+        min(frost_thin, temp_moderate, door_frequent, outside_cold),
+        min(frost_medium, temp_moderate, door_occasional, outside_moderate),
+        min(frost_thin, temp_cold, door_occasional, outside_moderate)
+    )
+    long_cycle = max(
+        min(frost_thick, temp_cold, door_frequent, outside_warm),
+        min(frost_medium, temp_very_cold, door_frequent, outside_warm),
+        min(frost_thick, temp_very_cold, door_frequent, outside_moderate)
+    )
+
+    # Use max-min defuzzification (maximum of minimums)
+    max_cycle_value = max(short_cycle, medium_cycle, long_cycle)
+    if max_cycle_value == short_cycle:
+        return "Short cycle"
+    elif max_cycle_value == medium_cycle:
+        return "Medium cycle"
     else:
-        return "No applicable defrost cycle found."
+        return "Long cycle"
 
 
 
 if __name__ == '__main__':
-    frozen_buildup_mm = float(input("Enter frost buildup in mm: "))
-    temperature_inside_c = float(input("Enter inside temperature in °C: "))
-    door_opening_frequency = int(input("Enter door opening frequency (times/day): "))
-    temperature_outside_c = float(input("Enter outside temperature in °C: ")) 
+    frost_buildup = float(input('Frost buildup in mm: '))
+    temp_inside = float(input('Temparature Inside in °C: '))
+    door_open_freq = float(input('Door opening frequency (times per day): '))
+    temp_outside = float(input('Temparature Outside in °C: '))
 
-    frost_buildup = get_frostBuildUp(frozen_buildup_mm)
-    temp_inside = fet_tempInside(temperature_inside_c)
-    door_frequency = get_doorOpeningFreq(door_opening_frequency)
-    temp_outside = get_tempOutside(temperature_outside_c)
-
-    defrost_cycle_output = fuzzy_rules(frost_buildup, temp_inside, door_frequency, temp_outside)
-
-    print(f"\nDefroster Cycle Output: {defrost_cycle_output}")
+    cycle_time = defrost_cycle(frost_buildup, temp_inside, door_open_freq, temp_outside)
+    print(f"Defrost cycle time: {cycle_time}") 
