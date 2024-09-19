@@ -40,4 +40,4 @@ An overview of frost buildup levels, temperature ranges inside and outside, and 
 | 7 Thick       | Moderate    | Frequently         | Moderate     | Long Defrost Cycle     |
 | 8 Very Thick  | Cold        | Rarely             | Cold         | Short Defrost Cycle    |
  -->
-![Fuzzy Logic Rule](https://res.cloudinary.com/dzvd6o0og/image/upload/v1726716004/rules_hxlpl2.png)
+![Fuzzy Logic Rule](https://res.cloudinary.com/dzvd6o0og/image/upload/v1726725522/photo_2024-09-18_17-01-26_qbgpab.jpg)
