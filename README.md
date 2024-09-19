@@ -28,7 +28,7 @@ An overview of frost buildup levels, temperature ranges inside and outside, and 
 
 
 ## Rules Table
-
+<!-- 
 | Frost Buildup | Temp Inside | Door Opening Freq. | Temp Outside | Defrost Cycle (Output) |
 |---------------|-------------|--------------------|--------------|------------------------|
 | 1 Thin        | Very Cold   | Rarely             | Cold         | No Defrost             |
@@ -39,4 +39,5 @@ An overview of frost buildup levels, temperature ranges inside and outside, and 
 | 6 Thick       | Moderate    | Frequently         | Warm         | Long Defrost Cycle     |
 | 7 Thick       | Moderate    | Frequently         | Moderate     | Long Defrost Cycle     |
 | 8 Very Thick  | Cold        | Rarely             | Cold         | Short Defrost Cycle    |
-
+ -->
+![Fuzzy Logic Rule](https://res.cloudinary.com/dzvd6o0og/image/upload/v1726716004/rules_hxlpl2.png)
