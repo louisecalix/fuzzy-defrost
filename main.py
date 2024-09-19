@@ -1,4 +1,4 @@
-def fuzzify_frost_buildup(mm):
+def get_frostBuildUp(mm):
     if mm < 2:
         return "Thin"
     elif 2 <= mm <= 5:
@@ -6,7 +6,7 @@ def fuzzify_frost_buildup(mm):
     else:
         return "Thick"
 
-def fuzzify_temperature_inside(temp):
+def fet_tempInside(temp):
     if temp < -10:
         return "Very Cold"
     elif -10 <= temp <= 0:
@@ -14,7 +14,7 @@ def fuzzify_temperature_inside(temp):
     else:
         return "Moderate"
 
-def fuzzify_door_opening_frequency(freq):
+def get_doorOpeningFreq(freq):
     if freq < 5:
         return "Rarely"
     elif 5 <= freq <= 8:
@@ -22,7 +22,7 @@ def fuzzify_door_opening_frequency(freq):
     else:
         return "Frequently"
 
-def fuzzify_temperature_outside(temp):
+def get_tempOutside(temp):
     if temp < 20:
         return "Cold"
     elif 20 <= temp <= 30:
@@ -30,8 +30,9 @@ def fuzzify_temperature_outside(temp):
     else:
         return "Warm"
 
-def determine_defrost_cycle(frost_buildup, temp_inside, door_opening_freq, temp_outside):
-    # Define the rules based on the provided conditions
+
+def fuzzy_rules(frost_buildup, temp_inside, door_opening_freq, temp_outside):
+
     if frost_buildup == "Thin" and temp_inside == "Very Cold" and door_opening_freq == "Rarely" and temp_outside == "Cold":
         return "No Defrost"
     
@@ -65,20 +66,19 @@ def determine_defrost_cycle(frost_buildup, temp_inside, door_opening_freq, temp_
     else:
         return "No applicable defrost cycle found."
 
-# Example Inputs
-frozen_buildup_mm = float(input("Enter frost buildup in mm: "))
-temperature_inside_c = float(input("Enter inside temperature in °C: "))
-door_opening_frequency = int(input("Enter door opening frequency (times/day): "))
-temperature_outside_c = float(input("Enter outside temperature in °C: ")) 
 
-# Fuzzification of inputs
-frost_buildup = fuzzify_frost_buildup(frozen_buildup_mm)
-temp_inside = fuzzify_temperature_inside(temperature_inside_c)
-door_frequency = fuzzify_door_opening_frequency(door_opening_frequency)
-temp_outside = fuzzify_temperature_outside(temperature_outside_c)
 
-# Determine the defrost cycle based on fuzzy logic rules
-defrost_cycle_output = determine_defrost_cycle(frost_buildup, temp_inside, door_frequency, temp_outside)
+if __name__ == '__main__':
+    frozen_buildup_mm = float(input("Enter frost buildup in mm: "))
+    temperature_inside_c = float(input("Enter inside temperature in °C: "))
+    door_opening_frequency = int(input("Enter door opening frequency (times/day): "))
+    temperature_outside_c = float(input("Enter outside temperature in °C: ")) 
 
-# Display Results
-print(f"\nDefroster Cycle Output: {defrost_cycle_output}")
+    frost_buildup = get_frostBuildUp(frozen_buildup_mm)
+    temp_inside = fet_tempInside(temperature_inside_c)
+    door_frequency = get_doorOpeningFreq(door_opening_frequency)
+    temp_outside = get_tempOutside(temperature_outside_c)
+
+    defrost_cycle_output = fuzzy_rules(frost_buildup, temp_inside, door_frequency, temp_outside)
+
+    print(f"\nDefroster Cycle Output: {defrost_cycle_output}")
