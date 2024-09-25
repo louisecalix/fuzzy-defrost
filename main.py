@@ -1,3 +1,6 @@
+import tkinter as tk
+from tkinter import ttk
+
 def get_frostBuildUp(x):
     if x < 2:
         return (1, 0, 0)  # Thin, Medium, Thick
@@ -32,47 +35,85 @@ def get_tempOutside(x):
     else:
         return (0, 0, 1)  # Cold, Moderate, Warm
 
+def defrost_cycle_weighted(frost_buildup, temp_inside, door_open_freq, temp_outside):
+    # Get fuzzy values
+    frost_values = get_frostBuildUp(frost_buildup)
+    temp_inside_values = get_tempInside(temp_inside)
+    door_open_freq_values = get_doorOpeningFreq(door_open_freq)
+    temp_outside_values = get_tempOutside(temp_outside)
+
+    # Evaluate rules
+    defrost_cycle = "Short"  # Default to Short cycle
+
+    # Apply rules
+    if frost_values[2] > 0:  # Thick frost
+        if temp_inside_values[1] > 0:  # Moderate
+            defrost_cycle = "Medium"
+        if temp_inside_values[0] > 0:  # Cold
+            defrost_cycle = "Long"
+    
+    if frost_values[1] > 0:  # Medium frost
+        if temp_inside_values[1] > 0:  # Moderate
+            defrost_cycle = "Short"
+        elif temp_inside_values[0] > 0:  # Cold
+            defrost_cycle = "Medium"
+
+    if frost_values[0] > 0:  # Thin frost
+        if door_open_freq_values[2] > 0:  # Frequently
+            defrost_cycle = "Short"
+        elif door_open_freq_values[1] > 0:  # Occasionally
+            defrost_cycle = "Short"
+    
+    if temp_outside_values[0] > 0:  # Cold outside
+        if defrost_cycle == "Medium":
+            defrost_cycle = "Long"  # Increase time if it's cold outside
+    elif temp_outside_values[2] > 0:  # Warm outside
+        if defrost_cycle == "Long":
+            defrost_cycle = "Medium"  # Decrease time if it's warm outside
 
 
-def defrost_cycle(frost_buildup, temp_inside, door_open_freq, temp_outside):
-    frost_thin, frost_medium, frost_thick = get_frostBuildUp(frost_buildup)
-    temp_very_cold, temp_cold, temp_moderate = get_tempInside(temp_inside)
-    door_rare, door_occasional, door_frequent = get_doorOpeningFreq(door_open_freq)
-    outside_cold, outside_moderate, outside_warm = get_tempOutside(temp_outside)
+    return defrost_cycle
 
-    short_cycle = max(
-        min(frost_thin, temp_moderate, door_rare, outside_cold),
-        min(frost_thin, temp_cold, door_occasional, outside_cold),
-        min(frost_thin, temp_moderate, door_frequent, outside_moderate)
-    )
-    medium_cycle = max(
-        min(frost_medium, temp_cold, door_occasional, outside_moderate),
-        min(frost_thin, temp_moderate, door_frequent, outside_cold),
-        min(frost_medium, temp_moderate, door_occasional, outside_moderate),
-        min(frost_thin, temp_cold, door_occasional, outside_moderate)
-    )
-    long_cycle = max(
-        min(frost_thick, temp_cold, door_frequent, outside_warm),
-        min(frost_medium, temp_very_cold, door_frequent, outside_warm),
-        min(frost_thick, temp_very_cold, door_frequent, outside_moderate)
-    )
 
-    # Use max-min defuzzification (maximum of minimums)
-    max_cycle_value = max(short_cycle, medium_cycle, long_cycle)
-    if max_cycle_value == short_cycle:
-        return "Short cycle"
-    elif max_cycle_value == medium_cycle:
-        return "Medium cycle"
-    else:
-        return "Long cycle"
+def simulate_defrost():
+    frost_buildup = frost_slider.get()
+    temp_inside = temp_inside_slider.get()
+    door_open_freq = door_freq_slider.get()
+    temp_outside = temp_outside_slider.get()
+
+    cycle_time = defrost_cycle_weighted(frost_buildup, temp_inside, door_open_freq, temp_outside)
+    result_label.config(text=f"Defrost cycle: {cycle_time}")
 
 
 
-if __name__ == '__main__':
-    frost_buildup = float(input('Frost buildup in mm: '))
-    temp_inside = float(input('Temparature Inside in °C: '))
-    door_open_freq = float(input('Door opening frequency (times per day): '))
-    temp_outside = float(input('Temparature Outside in °C: '))
 
-    cycle_time = defrost_cycle(frost_buildup, temp_inside, door_open_freq, temp_outside)
-    print(f"Defrost cycle time: {cycle_time}") 
+root = tk.Tk()
+root.title("Refrigerator Defrost Simulator")
+
+frost_label = tk.Label(root, text="Frost buildup (mm):")
+frost_label.pack()
+frost_slider = tk.Scale(root, from_=0, to_=10, orient="horizontal")
+frost_slider.pack()
+
+temp_inside_label = tk.Label(root, text="Temperature inside (°C):")
+temp_inside_label.pack()
+temp_inside_slider = tk.Scale(root, from_=-25, to_=5, orient="horizontal")
+temp_inside_slider.pack()
+
+door_freq_label = tk.Label(root, text="Door opening frequency (times per day):")
+door_freq_label.pack()
+door_freq_slider = tk.Scale(root, from_=0, to_=10, orient="horizontal")
+door_freq_slider.pack()
+
+temp_outside_label = tk.Label(root, text="Temperature outside (°C):")
+temp_outside_label.pack()
+temp_outside_slider = tk.Scale(root, from_=0, to_=40, orient="horizontal")
+temp_outside_slider.pack()
+
+start_button = tk.Button(root, text="Start Defrost Simulation", command=simulate_defrost)
+start_button.pack()
+
+result_label = tk.Label(root, text="Defrost cycle: ", font=("Arial", 14))
+result_label.pack()
+
+root.mainloop()
