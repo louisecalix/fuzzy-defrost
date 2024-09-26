@@ -14,8 +14,8 @@ def get_tempInside(x):
         return (1, 0, 0)  # Very Cold, Cold, Moderate
     elif -18 <= x <= -10:
         return (0, (-10 - x) / 8, (x + 18) / 8)  # Very Cold, Cold, Moderate
-    elif -10 <= x <= -1:
-        return (0, 1, 0)  # Very Cold, Cold, Moderate
+    elif -10 < x <= -1:
+        return (0, 0, 1)  # Very Cold, Cold, Moderate
     else:
         return (0, 0, 1)  # Very Cold, Cold, Moderate
 
@@ -42,38 +42,37 @@ def defrost_cycle_weighted(frost_buildup, temp_inside, door_open_freq, temp_outs
     door_open_freq_values = get_doorOpeningFreq(door_open_freq)
     temp_outside_values = get_tempOutside(temp_outside)
 
-    # Evaluate rules
-    defrost_cycle = "Short"  # Default to Short cycle
+    # Initialize defrost cycle score
+    defrost_score = 0
 
     # Apply rules
     if frost_values[2] > 0:  # Thick frost
-        if temp_inside_values[1] > 0:  # Moderate
-            defrost_cycle = "Medium"
-        if temp_inside_values[0] > 0:  # Cold
-            defrost_cycle = "Long"
-    
-    if frost_values[1] > 0:  # Medium frost
-        if temp_inside_values[1] > 0:  # Moderate
-            defrost_cycle = "Short"
-        elif temp_inside_values[0] > 0:  # Cold
-            defrost_cycle = "Medium"
+        defrost_score += 2
+    elif frost_values[1] > 0:  # Medium frost
+        defrost_score += 1
 
-    if frost_values[0] > 0:  # Thin frost
-        if door_open_freq_values[2] > 0:  # Frequently
-            defrost_cycle = "Short"
-        elif door_open_freq_values[1] > 0:  # Occasionally
-            defrost_cycle = "Short"
-    
+    if temp_inside_values[0] > 0:  # Very Cold
+        defrost_score += 1
+    elif temp_inside_values[1] > 0:  # Cold
+        defrost_score += 0.5
+
+    if door_open_freq_values[2] > 0:  # Frequently
+        defrost_score -= 0.5
+    elif door_open_freq_values[1] > 0:  # Occasionally
+        defrost_score -= 0.25
+
     if temp_outside_values[0] > 0:  # Cold outside
-        if defrost_cycle == "Medium":
-            defrost_cycle = "Long"  # Increase time if it's cold outside
+        defrost_score += 0.5
     elif temp_outside_values[2] > 0:  # Warm outside
-        if defrost_cycle == "Long":
-            defrost_cycle = "Medium"  # Decrease time if it's warm outside
+        defrost_score -= 0.5
 
-
-    return defrost_cycle
-
+    # Determine cycle based on score
+    if defrost_score >= 2:
+        return "Long"
+    elif defrost_score >= 1:
+        return "Medium"
+    else:
+        return "Short"
 
 def simulate_defrost():
     frost_buildup = frost_slider.get()
@@ -83,9 +82,6 @@ def simulate_defrost():
 
     cycle_time = defrost_cycle_weighted(frost_buildup, temp_inside, door_open_freq, temp_outside)
     result_label.config(text=f"Defrost cycle: {cycle_time}")
-
-
-
 
 root = tk.Tk()
 root.title("Refrigerator Defrost Simulator")
