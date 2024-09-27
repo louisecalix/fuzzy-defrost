@@ -186,13 +186,6 @@ class IceMeltAnimation:
         self.update_cooling_status()
         self.start_animation(cycle_time)
 
-
-    import tkinter as tk
-from tkinter import ttk
-from PIL import Image, ImageTk
-import os
-
-
 class IceMeltAnimation:
     def __init__(self, root):
         self.root = root
